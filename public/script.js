@@ -3,12 +3,21 @@ const client = new WebSocket("ws://" + document.domain + ":81");
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
-const me = {};
+let id;
 const players = [];
 
 setInterval(frame, 10);
 
-client.
+client.addEventListener("message", (data) => {
+    data = JSON.parse(data.data);
+    if (data.name == "start") {
+        id = data.params.id;
+    }
+    if (data.name == "position") {
+        if (!players[data.params.id]) players[data.params.id] = {};
+        players[data.params.id].position = data.params.position;
+    }
+});
 
 function frame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -18,19 +27,5 @@ function frame() {
     for (i in players) {
         const player = players[i];
         ctx.fillRect(player.position.x, player.position.y, 10, 10);
-    }
-}
-
-class Player {
-    constructor(id, position) {
-        this.id = id;
-        this.position = position;
-    }
-}
-
-class Position {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
     }
 }

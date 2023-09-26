@@ -11,13 +11,16 @@ const players = [];
 
 server.on("connection", (socket) => {
     console.log("connected");
-    socket.send({ name: "start", params: { id: players.length } });
+    let packet = { name: "start", params: { id: players.length } };
+    socket.send(JSON.stringify(packet));
     players.push(new Player(players.length, new Position(50, 50)));
     for (i in players) {
-        socket.send({ name: "position", params: players[i].position });
+        let packet = { name: "position", params: { position: players[i].position, id: players[i].id } };
+        socket.send(JSON.stringify(packet));
     }
     socket.on("message", (data) => {
         data = JSON.parse(data);
+        console.log(data);
     });
 });
 
